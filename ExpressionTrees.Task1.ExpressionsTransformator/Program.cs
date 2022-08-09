@@ -7,6 +7,8 @@
  * The results could be printed in console or checked via Debugger using any Visualizer.
  */
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace ExpressionTrees.Task1.ExpressionsTransformer
 {
@@ -17,9 +19,31 @@ namespace ExpressionTrees.Task1.ExpressionsTransformer
             Console.WriteLine("Expression Visitor for increment/decrement.");
             Console.WriteLine();
 
-            // todo: feel free to add your code here
+            Expression<Func<int, int>> increment = (variable) => variable + 1;
+            Expression<Func<int, int>> decrement = (variable) => variable - 1;
+
+            var visitor = new IncDecExpressionVisitor();
+            var incrementExpression = visitor.Visit((increment)) as Expression<Func<int, int>>;
+            var incrementFunc = incrementExpression.Compile();
+            Console.WriteLine(incrementFunc(7)); //8
+
+            var decrementExpression = visitor.Visit((decrement)) as Expression<Func<int, int>>;
+            var decrementFunc = decrementExpression.Compile();
+            Console.WriteLine(decrementFunc(7)); //6
+
+            var transformationParameters = new Dictionary<string, int>() { { "variable", 1000 } };
+
+            visitor.SetTransformationParameters(transformationParameters);
+            var incrementTransformedExpression = visitor.Visit((increment)) as Expression<Func<int, int>>;
+            var incrementTransformedExpressionFunc = incrementTransformedExpression.Compile();
+            Console.WriteLine(incrementTransformedExpressionFunc(7)); //1001
+
+            var decrementTransformedExpression = visitor.Visit((decrement)) as Expression<Func<int, int>>;
+            var decrementTransformedExpressionFunc = decrementTransformedExpression.Compile();
+            Console.WriteLine(decrementTransformedExpressionFunc(7)); //999
 
             Console.ReadLine();
         }
     }
+
 }
